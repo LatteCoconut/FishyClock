@@ -38,6 +38,9 @@ class FramelessWindow(QMainWindow):
         self.timer.timeout.connect(self.update_label)
         self.timer.start(1000)  # 每分钟更新一次
 
+        # 设置窗口不在任务栏中显示
+        self.setWindowFlags(Qt.WindowType.Tool | Qt.WindowType.FramelessWindowHint)
+
     def init_ui(self):
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
@@ -138,9 +141,8 @@ class FramelessWindow(QMainWindow):
                 pass
         elif current_os == "Windows":
             try:
-                from win10toast import ToastNotifier
-                toaster = ToastNotifier()
-                toaster.show_toast("FishyClock", f"{self.off_duty_reminder}", duration=10)
+                from win11toast import toast
+                toast(f"{self.off_duty_reminder}")
             except ImportError:
                 pass
 
@@ -148,6 +150,13 @@ class FramelessWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)  # 防止所有窗口关闭时退出应用程序
+
+    # from pyobjc import objc
+    # from Cocoa import NSApplication, NSApplicationActivationPolicyAccessory
+    # # 让应用程序不在 Dock 栏显示
+    # NSApp = objc.objc_getClass("NSApplication").sharedApplication()
+    # NSApp.setActivationPolicy_(NSApplicationActivationPolicyAccessory)
+
     # 应用 qt-material 主题
     apply_stylesheet(app, theme='dark_amber.xml')
 
