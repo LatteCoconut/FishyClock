@@ -1,4 +1,6 @@
 import sys
+import time
+
 from PyQt6.QtCore import Qt, QPoint
 from PyQt6.QtGui import QColor, QPalette, QIcon, QAction
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QMenu, QSystemTrayIcon
@@ -86,6 +88,7 @@ class FramelessWindow(QMainWindow):
         # 检查是否达到 100%
         if work_percentage == "100.00%" and time_to_leave == "00:00:00":
             self.timer.stop()  # 停止计时器
+            time.sleep(1)
             self.send_off_duty_notification()  # 发送下班通知
 
     def update_values(self, time_to_leave, work_percentage, earnings):
@@ -113,7 +116,10 @@ class FramelessWindow(QMainWindow):
 
     def create_tray_icon(self):
         tray_icon = QSystemTrayIcon(self)
-        tray_icon.setIcon(QIcon("assets/aquarium.png"))  # 确保图标路径正确
+        if current_os == "Windows":
+            tray_icon.setIcon(QIcon("assets/aquarium_win.png"))
+        else:
+            tray_icon.setIcon(QIcon("assets/aquarium.png"))  # 确保图标路径正确
 
         # 创建托盘菜单
         tray_menu = QMenu(self)
