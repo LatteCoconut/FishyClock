@@ -16,7 +16,6 @@ from PyQt6.QtCore import QTime, QTimer
 import platform
 from utils import resource_path
 
-
 current_os = platform.system()
 
 
@@ -24,7 +23,12 @@ class FramelessWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+        if current_os == "Windows":
+            self.setWindowFlags(
+                Qt.WindowType.Tool | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
+        else:
+            self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setFixedSize(200, 40)
 
@@ -47,10 +51,6 @@ class FramelessWindow(QMainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_label)
         self.timer.start(1000)  # 每分钟更新一次
-
-        # 设置窗口不在任务栏中显示
-        if current_os == "Windows":
-            self.setWindowFlags(Qt.WindowType.Tool | Qt.WindowType.FramelessWindowHint)
 
     def init_ui(self):
         central_widget = QWidget(self)
