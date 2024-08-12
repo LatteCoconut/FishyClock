@@ -88,7 +88,6 @@ class FramelessWindow(QMainWindow):
         # 检查是否达到 100%
         if work_percentage == "100.00%" and time_to_leave == "00:00:00":
             self.timer.stop()  # 停止计时器
-            time.sleep(1)
             self.send_off_duty_notification()  # 发送下班通知
 
     def update_values(self, time_to_leave, work_percentage, earnings):
