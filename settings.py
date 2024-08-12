@@ -100,6 +100,8 @@ class SettingsWindow(QDialog):
         self.parent.end_work_time = self.end_time_edit.time()
         self.parent.salary = float(self.salary_edit.text())
         self.parent.off_duty_reminder = self.word_edit.text()
+        if not self.parent.timer.isActive():
+            self.parent.timer.start(1000)
         self.accept()
 
     def on_cancel_clicked(self):
