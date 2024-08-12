@@ -5,7 +5,6 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QLa
 from settings import SettingsWindow
 from qt_material import apply_stylesheet
 from PyQt6.QtCore import QTime, QTimer
-from pync import Notifier
 import platform
 
 current_os = platform.system()
@@ -132,6 +131,7 @@ class FramelessWindow(QMainWindow):
     def send_off_duty_notification(self):
         if current_os == "Darwin":
             try:
+                from pync import Notifier
                 # 发送下班通知
                 Notifier.notify(f"{self.off_duty_reminder}", title="FishyClock")
             except ImportError:
