@@ -1,21 +1,23 @@
 import sys
 from PyQt6.QtCore import Qt, QPoint
 from PyQt6.QtGui import QColor, QPalette, QIcon, QAction
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QMenu, QSystemTrayIcon
+from PyQt6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QMenu,
+    QSystemTrayIcon,
+)
 from settings import SettingsWindow
 from qt_material import apply_stylesheet
 from PyQt6.QtCore import QTime, QTimer
 import platform
-import os
+from utils import resource_path
+
 
 current_os = platform.system()
-
-
-def resource_path(relative_path):
-    """ Get the absolute path to the resource, works for dev and for PyInstaller """
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.join(os.path.abspath("."), relative_path)
 
 
 class FramelessWindow(QMainWindow):
@@ -47,7 +49,8 @@ class FramelessWindow(QMainWindow):
         self.timer.start(1000)  # 每分钟更新一次
 
         # 设置窗口不在任务栏中显示
-        self.setWindowFlags(Qt.WindowType.Tool | Qt.WindowType.FramelessWindowHint)
+        if current_os == "Windows":
+            self.setWindowFlags(Qt.WindowType.Tool | Qt.WindowType.FramelessWindowHint)
 
     def init_ui(self):
         central_widget = QWidget(self)
@@ -55,7 +58,9 @@ class FramelessWindow(QMainWindow):
 
         # 设置背景颜色和透明度
         palette = self.palette()
-        palette.setColor(QPalette.ColorRole.Window, QColor(0, 0, 0, 150))  # 黑色背景，150为透明度
+        palette.setColor(
+            QPalette.ColorRole.Window, QColor(0, 0, 0, 150)
+        )  # 黑色背景，150为透明度
         central_widget.setAutoFillBackground(True)
         central_widget.setPalette(palette)
 
@@ -124,7 +129,9 @@ class FramelessWindow(QMainWindow):
         if current_os == "Windows":
             tray_icon.setIcon(QIcon(resource_path("assets/aquarium_win.png")))
         else:
-            tray_icon.setIcon(QIcon(resource_path("assets/aquarium.png")))  # 确保图标路径正确
+            tray_icon.setIcon(
+                QIcon(resource_path("assets/aquarium.png"))
+            )  # 确保图标路径正确
 
         # 创建托盘菜单
         tray_menu = QMenu(self)
@@ -146,6 +153,7 @@ class FramelessWindow(QMainWindow):
         if current_os == "Darwin":
             try:
                 from pync import Notifier
+
                 # 发送下班通知
                 Notifier.notify(f"{self.off_duty_reminder}", title="FishyClock")
             except ImportError:
@@ -153,6 +161,7 @@ class FramelessWindow(QMainWindow):
         elif current_os == "Windows":
             try:
                 from win11toast import toast
+
                 toast(f"{self.off_duty_reminder}")
             except ImportError:
                 pass
@@ -169,7 +178,7 @@ if __name__ == "__main__":
     # NSApp.setActivationPolicy_(NSApplicationActivationPolicyAccessory)
 
     # 应用 qt-material 主题
-    apply_stylesheet(app, theme='dark_amber.xml')
+    apply_stylesheet(app, theme="dark_amber.xml")
 
     window = FramelessWindow()
     window.show()

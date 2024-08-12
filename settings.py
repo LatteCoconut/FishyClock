@@ -1,11 +1,21 @@
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton, QTimeEdit
-from PyQt6.QtGui import QDoubleValidator
+from PyQt6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QLabel,
+    QLineEdit,
+    QHBoxLayout,
+    QPushButton,
+    QTimeEdit,
+)
+from PyQt6.QtGui import QDoubleValidator, QIcon
+from utils import resource_path
 
 
 class SettingsWindow(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Settings")
+        self.setWindowIcon(QIcon(resource_path("assets/aquarium_win_sM8_icon.ico")))
         self.setFixedSize(350, 500)
 
         self.parent = parent
@@ -50,7 +60,9 @@ class SettingsWindow(QDialog):
         self.salary_edit.setFixedWidth(input_width)  # 设置固定宽度
         self.salary_edit.setStyleSheet(qss)
         # 设置 QDoubleValidator 限制输入为数字
-        validator = QDoubleValidator(0.0, 1000000.0, 2, self)  # 最小值0.0，最大值1000000.0，小数点后两位
+        validator = QDoubleValidator(
+            0.0, 1000000.0, 2, self
+        )  # 最小值0.0，最大值1000000.0，小数点后两位
         validator.setNotation(QDoubleValidator.Notation.StandardNotation)
         self.salary_edit.setValidator(validator)
         self.salary_edit.setText(f"{self.parent.salary:.2f}")
@@ -82,7 +94,6 @@ class SettingsWindow(QDialog):
         # 连接按钮事件
         self.ok_button.clicked.connect(self.on_ok_clicked)
         self.cancel_button.clicked.connect(self.on_cancel_clicked)
-
 
     def on_ok_clicked(self):
         self.parent.start_work_time = self.start_time_edit.time()
