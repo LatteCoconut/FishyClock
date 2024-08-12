@@ -1,6 +1,4 @@
 import sys
-import time
-
 from PyQt6.QtCore import Qt, QPoint
 from PyQt6.QtGui import QColor, QPalette, QIcon, QAction
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QMenu, QSystemTrayIcon
@@ -8,8 +6,16 @@ from settings import SettingsWindow
 from qt_material import apply_stylesheet
 from PyQt6.QtCore import QTime, QTimer
 import platform
+import os
 
 current_os = platform.system()
+
+
+def resource_path(relative_path):
+    """ Get the absolute path to the resource, works for dev and for PyInstaller """
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 
 class FramelessWindow(QMainWindow):
@@ -116,9 +122,9 @@ class FramelessWindow(QMainWindow):
     def create_tray_icon(self):
         tray_icon = QSystemTrayIcon(self)
         if current_os == "Windows":
-            tray_icon.setIcon(QIcon("assets/aquarium_win.png"))
+            tray_icon.setIcon(QIcon(resource_path("assets/aquarium_win.png")))
         else:
-            tray_icon.setIcon(QIcon("assets/aquarium.png"))  # 确保图标路径正确
+            tray_icon.setIcon(QIcon(resource_path("assets/aquarium.png")))  # 确保图标路径正确
 
         # 创建托盘菜单
         tray_menu = QMenu(self)
