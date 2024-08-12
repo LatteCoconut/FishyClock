@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton, QTimeEdit
-from PyQt6.QtCore import QTime
+from PyQt6.QtGui import QDoubleValidator
 
 
 class SettingsWindow(QDialog):
@@ -7,6 +7,8 @@ class SettingsWindow(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Settings")
         self.setFixedSize(350, 500)
+
+        self.parent = parent
 
         # 创建主网格布局
         main_layout = QVBoxLayout()
@@ -25,7 +27,7 @@ class SettingsWindow(QDialog):
         start_time_label = QLabel("上班时间:")
         self.start_time_edit = QTimeEdit(self)
         self.start_time_edit.setFixedWidth(input_width)  # 设置固定宽度
-        self.start_time_edit.setTime(QTime(9, 0))  # 设置默认时间为 9:00
+        self.start_time_edit.setTime(self.parent.start_work_time)  # 设置默认时间为 9:00
         self.start_time_edit.setStyleSheet(qss)  # 应用 QSS 样式
         start_time_layout.addWidget(start_time_label)
         start_time_layout.addWidget(self.start_time_edit)
@@ -36,7 +38,7 @@ class SettingsWindow(QDialog):
         end_time_label = QLabel("下班时间:")
         self.end_time_edit = QTimeEdit(self)
         self.end_time_edit.setFixedWidth(input_width)  # 设置固定宽度
-        self.end_time_edit.setTime(QTime(18, 0))
+        self.end_time_edit.setTime(self.parent.end_work_time)
         self.end_time_edit.setStyleSheet(qss)
         end_time_layout.addWidget(end_time_label)
         end_time_layout.addWidget(self.end_time_edit)
@@ -47,6 +49,11 @@ class SettingsWindow(QDialog):
         self.salary_edit = QLineEdit(self)
         self.salary_edit.setFixedWidth(input_width)  # 设置固定宽度
         self.salary_edit.setStyleSheet(qss)
+        # 设置 QDoubleValidator 限制输入为数字
+        validator = QDoubleValidator(0.0, 1000000.0, 2, self)  # 最小值0.0，最大值1000000.0，小数点后两位
+        validator.setNotation(QDoubleValidator.Notation.StandardNotation)
+        self.salary_edit.setValidator(validator)
+        self.salary_edit.setText(f"{self.parent.salary:.2f}")
         salary_layout.addWidget(QLabel("日薪 (¥):"))
         salary_layout.addWidget(self.salary_edit)
         main_layout.addLayout(salary_layout)
@@ -54,8 +61,9 @@ class SettingsWindow(QDialog):
         # 下班提示词
         word_layout = QHBoxLayout()
         self.word_edit = QLineEdit(self)
-        self.word_edit.setFixedWidth(input_width)  # 设置固定宽度
+        self.word_edit.setFixedWidth(200)  # 设置固定宽度
         self.word_edit.setStyleSheet(qss)
+        self.word_edit.setText(f"{self.parent.off_duty_reminder}")
         word_layout.addWidget(QLabel("下班提示词:"))
         word_layout.addWidget(self.word_edit)
         main_layout.addLayout(word_layout)
@@ -77,18 +85,11 @@ class SettingsWindow(QDialog):
 
 
     def on_ok_clicked(self):
-        # 当用户点击 "OK" 按钮时执行的操作
-        print("OK clicked")
-        start_time = self.start_time_edit.time().toString("HH:mm")
-        end_time = self.end_time_edit.time().toString("HH:mm")
-        salary = self.salary_edit.text()
-        word = self.word_edit.text()
-
-        # 你可以在这里处理这些数据，例如将它们保存或传递到其他窗口
-        print(f"上班时间: {start_time}, 下班时间: {end_time}, 日薪: {salary}, 提示词: {word}")
-        self.accept()  # 关闭对话框并返回 QDialog.Accepted
+        self.parent.start_work_time = self.start_time_edit.time()
+        self.parent.end_work_time = self.end_time_edit.time()
+        self.parent.salary = float(self.salary_edit.text())
+        self.parent.off_duty_reminder = self.word_edit.text()
+        self.accept()
 
     def on_cancel_clicked(self):
-        # 当用户点击 "Cancel" 按钮时执行的操作
-        print("Cancel clicked")
-        self.reject()  # 关闭对话框并返回 QDialog.Rejected
+        self.reject()
