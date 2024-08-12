@@ -25,7 +25,7 @@ class FramelessWindow(QMainWindow):
         self.start_work_time = QTime(9, 0)
         self.end_work_time = QTime(18, 0)
         self.salary = 100.00
-        self.off_duty_reminder = "到点啦，下班啦！"
+        self.off_duty_reminder = "到点啦，🏃‍♂️下班啦！"
 
         # 设置窗口透明度
         self.setWindowOpacity(0.8)
@@ -125,7 +125,7 @@ class FramelessWindow(QMainWindow):
 
         # 添加退出选项
         quit_action = QAction("Exit", self)
-        quit_action.triggered.connect(self.close)
+        quit_action.triggered.connect(QApplication.instance().quit)  # 退出应用程序
         tray_menu.addAction(quit_action)
 
         tray_icon.setContextMenu(tray_menu)
